@@ -262,6 +262,7 @@
   });
 
   onUnmounted(() => {
+    if (monaco_editor)
     monaco_editor.dispose();
   });
 </script>

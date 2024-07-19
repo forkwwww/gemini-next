@@ -202,6 +202,7 @@
   import { useWebSocket } from '@vueuse/core';
   import { COMMON_URI } from '@/config/request';
   import editor from '@/components/editor/editor.vue';
+  import { getPolicySources } from "@/apis/policy";
 
   interface stepUsage {
     action: string;
@@ -249,6 +250,24 @@
   };
 
   const checkSQL = async (sql: string) => {
+      //如果为postgresql不再检测 begin
+    const sources = await getPolicySources();
+    let flag=false;
+    sources.data.payload.source.forEach((item) => {
+      console.log(item);
+      if (item.source_id == order.value.source_id) {
+        if (item.db_type == 1) {
+          console.log(33333333);
+          enabled.value = false;
+          flag=true
+          return;
+        }
+      }
+    });
+    if (flag) {
+      return;
+    }
+    //如果为postgresql不再检测 end
     spin.value = !spin.value;
 
     const { data } = await checkSQLS({

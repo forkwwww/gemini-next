@@ -18,7 +18,8 @@
           <a-form-item :label="$t('common.table.env')">
             <span>{{ orderItems.idc }}</span>
           </a-form-item>
-          <a-form-item :label="$t('common.table.source')">
+          <a-form-item :label="$t('common.table.source')"
+            ><!--数据源-->
             <span>{{ orderItems.source }}</span>
           </a-form-item>
           <a-form-item :label="$t('common.table.schema')" name="data_base">
@@ -61,7 +62,8 @@
               @ok="delayTime"
             />
           </a-form-item>
-          <a-form-item :label="$t('order.profile.roll')">
+          <a-form-item :label="$t('order.profile.roll')"
+            ><!--是否回滚-->
             <a-radio-group v-model:value="orderItems.backup" name="radioGroup">
               <a-radio :value="1">{{ $t('common.yes') }}</a-radio>
               <a-radio :value="0">{{ $t('common.no') }}</a-radio>
@@ -71,6 +73,7 @@
             <a-space>
               <a-button :loading="loadingTblBtn" @click="fetchTableArch">{{
                 $t('order.apply.table.info')
+                /*获取表结构*/
               }}</a-button>
               <a-button
                 :loading="loadingPostBtn"
@@ -160,7 +163,7 @@
 <script lang="ts" setup>
   import Editor from '@/components/editor/editor.vue';
   import JunoMixin from '@/mixins/juno';
-  import { onMounted, ref, onUnmounted } from 'vue';
+  import { onMounted, ref, onUnmounted, computed } from 'vue';
   import { useRoute, onBeforeRouteLeave } from 'vue-router';
   import { SQLTesting } from '@/types';
   import FetchMixins from '@/mixins/fetch';
@@ -186,6 +189,8 @@
   import { debounce } from 'lodash-es';
   import { createSQLToken } from '@/components/editor/impl';
   import * as monaco from 'monaco-editor';
+  import { DBExpr, getSourceList } from '@/apis/db';
+  import { getPolicySources } from '@/apis/policy';
 
   const { t } = useI18n();
 
@@ -297,6 +302,29 @@
   };
 
   const testResults = debounce(async (sql: string) => {
+    //如果为postgresql不再检测 begin
+    const sources = await getPolicySources();
+    let flag = false;
+    sources.data.payload.source.forEach((item) => {
+      console.log(item);
+      if (item.source_id == orderItems.source_id) {
+        if (item.db_type == 1) {
+          // console.log(33333333);
+          enabled.value = false;
+          flag = true;
+          return;
+        }
+      }
+    });
+    if (flag) {
+      return;
+    }
+    //如果为postgresql不再检测 end
+
+    // if (orderItems.type == 'pg') {
+    //   enabled.value = false;
+    //   return;
+    // }
     if (sql.replace(/(^s*)|(s*$)/g, '').length == 0) {
       return;
     }
@@ -440,6 +468,8 @@
 
   onUnmounted(() => {
     window.onbeforeunload = null;
-    monaco_editor.dispose();
+    if (monaco_editor) {
+      monaco_editor.dispose();
+    }
   });
 </script>
