@@ -9,13 +9,9 @@
     </a-form-item>
     <a-form-item :label="$t('common.table.db_type')">
       <a-select v-model:value="dbForm.db_type">
-        <a-select-option
-          v-for="i in db_type"
-          :key="i.value"
-          :value="i.value"
-          :disabled="i.value === 1"
-          >{{ i.label }}</a-select-option
-        >
+        <a-select-option v-for="i in db_type" :key="i.value" :value="i.value">{{
+          i.label
+        }}</a-select-option>
       </a-select>
     </a-form-item>
     <a-form-item :label="$t('common.table.name')" name="source">
