@@ -18,6 +18,7 @@ export interface Source {
   key_file: string;
   rule_id: number;
   db_type: number;
+  db_name: string;
 }
 
 export interface DBParams {

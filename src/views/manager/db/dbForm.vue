@@ -47,6 +47,9 @@
         </a-button>
       </a-form-item>
     </template>
+     <a-form-item label="数据库" name="db_name">
+      <a-input v-model:value="dbForm.db_name"></a-input>
+    </a-form-item>
     <a-form-item :label="$t('user.username')" name="username">
       <a-input v-model:value="dbForm.username"></a-input>
     </a-form-item>
@@ -227,6 +230,7 @@
     cert: '',
     key_file: '',
     db_type: 0,
+    db_name: '',
   } as Source);
 
   const formRef = ref();
